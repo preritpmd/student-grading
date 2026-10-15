@@ -1,0 +1,59 @@
+
+import csv
+import math
+
+
+def calculate_grade(marks):
+    try:
+        marks = float(marks)
+    except (ValueError, TypeError) as exc:
+        raise ValueError("Marks must be numeric") from exc
+
+    if not math.isfinite(marks) or not 0 <= marks <= 100:
+        raise ValueError("Marks must be between 0 and 100")
+
+    if marks >= 80:
+        return "A"
+    elif marks >= 60:
+        return "B"
+    elif marks >= 40:
+        return "C"
+    return "F"
+
+
+def read_students(filename="students.csv"):
+    students = []
+
+    with open(filename, newline="", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+
+        for line_number, row in enumerate(reader, start=2):
+            try:
+                if not row.get("id") or not row.get("name"):
+                    raise ValueError("Missing ID or name")
+                if not row.get("marks"):
+                    raise ValueError("Missing marks")
+
+                marks = float(row["marks"])
+                grade = calculate_grade(marks)
+
+                students.append({
+                    "id": row["id"],
+                    "name": row["name"],
+                    "marks": marks,
+                    "grade": grade,
+                })
+            except (ValueError, TypeError) as exc:
+                raise ValueError(
+                    f"Invalid CSV record at line {line_number}: {exc}"
+                ) from exc
+
+    return students
+
+
+if __name__ == "__main__":
+    for student in read_students():
+        print(
+            f'{student["id"]} | {student["name"]} | '
+            f'{student["marks"]:.1f} | {student["grade"]}'
+        )
