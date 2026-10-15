@@ -12,12 +12,10 @@ def calculate_grade(marks):
     if not math.isfinite(marks) or not 0 <= marks <= 100:
         raise ValueError("Marks must be between 0 and 100")
 
-    if marks >= 80:
-        return "A"
-    elif marks >= 60:
-        return "B"
-    elif marks >= 40:
-        return "C"
+    for threshold, grade in [(80, "A"), (60, "B"), (40, "C")]:
+        if marks >= threshold:
+            return grade
+
     return "F"
 
 
@@ -51,9 +49,18 @@ def read_students(filename="students.csv"):
     return students
 
 
-if __name__ == "__main__":
-    for student in read_students():
+def generate_report(filename="students.csv"):
+    students = read_students(filename)
+
+    print("ID | Name | Marks | Grade")
+    print("-" * 30)
+
+    for student in students:
         print(
             f'{student["id"]} | {student["name"]} | '
             f'{student["marks"]:.1f} | {student["grade"]}'
         )
+
+
+if __name__ == "__main__":
+    generate_report()
